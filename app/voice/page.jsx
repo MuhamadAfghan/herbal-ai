@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Mic,
   MicOff,
@@ -14,90 +14,94 @@ import {
   Headphones,
   CheckCircle,
   StopCircle,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 function VoiceSearchContent() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isListening, setIsListening] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const recognitionRef = useRef(null)
-  const abortControllerRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const recognitionRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     // Get query from URL params if exists
-    const urlQuery = searchParams.get("q")
+    const urlQuery = searchParams.get("q");
     if (urlQuery) {
-      setSearchQuery(urlQuery)
+      setSearchQuery(urlQuery);
     }
 
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-      recognitionRef.current = new SpeechRecognition()
-      recognitionRef.current.continuous = false
-      recognitionRef.current.interimResults = false
-      recognitionRef.current.lang = "id-ID"
+      const SpeechRecognition =
+        window.webkitSpeechRecognition || window.SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      // recognitionRef.current.lang = "en-US"
+      recognitionRef.current.lang = "id-ID";
 
       recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript
-        setSearchQuery(transcript)
-        setIsListening(false)
-      }
+        const transcript = event.results[0][0].transcript;
+        setSearchQuery(transcript);
+        setIsListening(false);
+      };
 
       recognitionRef.current.onerror = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
 
       recognitionRef.current.onend = () => {
-        setIsListening(false)
-      }
+        setIsListening(false);
+      };
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   const handleVoiceSearch = () => {
     if (recognitionRef.current) {
-      setIsListening(true)
-      recognitionRef.current.start()
+      setIsListening(true);
+      recognitionRef.current.start();
     }
-  }
+  };
 
   const stopListening = () => {
     if (recognitionRef.current) {
-      recognitionRef.current.stop()
-      setIsListening(false)
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
-  }
+  };
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
-      setIsLoading(true)
+      setIsLoading(true);
 
       // Create abort controller
-      abortControllerRef.current = new AbortController()
+      abortControllerRef.current = new AbortController();
 
       // Small delay to show loading state, then navigate
       setTimeout(() => {
         if (!abortControllerRef.current?.signal.aborted) {
-          router.push(`/results?q=${encodeURIComponent(searchQuery)}&type=voice`)
+          router.push(
+            `/results?q=${encodeURIComponent(searchQuery)}&type=voice`
+          );
         }
-        setIsLoading(false)
-      }, 500)
+        setIsLoading(false);
+      }, 500);
     }
-  }
+  };
 
   const handleStop = () => {
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
+      abortControllerRef.current.abort();
     }
     if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop()
-      setIsListening(false)
+      recognitionRef.current.stop();
+      setIsListening(false);
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50">
@@ -114,7 +118,10 @@ function VoiceSearchContent() {
                   HerbalAI
                 </span>
               </div>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 hidden sm:flex">
+              <Badge
+                variant="secondary"
+                className="bg-blue-100 text-blue-700 hidden sm:flex"
+              >
                 <Sparkles className="h-3 w-3 mr-1" />
                 AI Speech-to-Text
               </Badge>
@@ -169,8 +176,9 @@ function VoiceSearchContent() {
             </h1>
 
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Teknologi AI Speech-to-Text memungkinkan Anda untuk mencari tanaman obat hanya dengan berbicara. Ceritakan
-              keluhan kesehatan Anda dengan natural dan biarkan AI menemukan solusinya.
+              Teknologi AI Speech-to-Text memungkinkan Anda untuk mencari
+              tanaman obat hanya dengan berbicara. Ceritakan keluhan kesehatan
+              Anda dengan natural dan biarkan AI menemukan solusinya.
             </p>
           </div>
 
@@ -188,7 +196,11 @@ function VoiceSearchContent() {
                       : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 hover:scale-105"
                   }`}
                 >
-                  {isListening ? <MicOff className="h-16 w-16" /> : <Mic className="h-16 w-16" />}
+                  {isListening ? (
+                    <MicOff className="h-16 w-16" />
+                  ) : (
+                    <Mic className="h-16 w-16" />
+                  )}
                 </Button>
 
                 {isListening && (
@@ -199,14 +211,18 @@ function VoiceSearchContent() {
               {/* Status */}
               <div className="space-y-4">
                 <h3 className="text-2xl font-semibold text-gray-800">
-                  {isListening ? "Mendengarkan..." : isLoading ? "Memproses..." : "Klik untuk Mulai Berbicara"}
+                  {isListening
+                    ? "Mendengarkan..."
+                    : isLoading
+                    ? "Memproses..."
+                    : "Klik untuk Mulai Berbicara"}
                 </h3>
                 <p className="text-gray-600">
                   {isListening
                     ? "Ceritakan keluhan kesehatan Anda dengan jelas"
                     : isLoading
-                      ? "Sedang memproses permintaan Anda..."
-                      : "Contoh: 'Saya sering sakit kepala dan sulit tidur' atau 'Batuk saya tidak kunjung sembuh'"}
+                    ? "Sedang memproses permintaan Anda..."
+                    : "Contoh: 'Saya sering sakit kepala dan sulit tidur' atau 'Batuk saya tidak kunjung sembuh'"}
                 </p>
               </div>
 
@@ -215,12 +231,20 @@ function VoiceSearchContent() {
                 <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
                   <div className="flex items-center justify-center gap-2 text-blue-600 mb-2">
                     <CheckCircle className="h-5 w-5" />
-                    <h4 className="font-semibold text-blue-800">Yang Anda Katakan:</h4>
+                    <h4 className="font-semibold text-blue-800">
+                      Yang Anda Katakan:
+                    </h4>
                   </div>
-                  <p className="text-blue-700 text-lg italic mb-4">"{searchQuery}"</p>
+                  <p className="text-blue-700 text-lg italic mb-4">
+                    "{searchQuery}"
+                  </p>
                   <div className="flex gap-4 justify-center">
                     {isLoading ? (
-                      <Button onClick={handleStop} variant="destructive" className="px-6">
+                      <Button
+                        onClick={handleStop}
+                        variant="destructive"
+                        className="px-6"
+                      >
                         <StopCircle className="h-4 w-4 mr-2" />
                         Stop Pencarian
                       </Button>
@@ -257,7 +281,9 @@ function VoiceSearchContent() {
               {/* Voice Tips */}
               <div className="grid md:grid-cols-2 gap-6 mt-8">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-100">
-                  <h4 className="font-semibold text-blue-800 mb-3">Tips Penggunaan Voice Search:</h4>
+                  <h4 className="font-semibold text-blue-800 mb-3">
+                    Tips Penggunaan Voice Search:
+                  </h4>
                   <ul className="text-sm text-blue-700 space-y-2 text-left">
                     <li>• Bicara dengan jelas dan tidak terlalu cepat</li>
                     <li>• Jelaskan gejala dengan detail</li>
@@ -267,7 +293,9 @@ function VoiceSearchContent() {
                 </div>
 
                 <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100">
-                  <h4 className="font-semibold text-purple-800 mb-3">Contoh Keluhan yang Bisa Dicari:</h4>
+                  <h4 className="font-semibold text-purple-800 mb-3">
+                    Contoh Keluhan yang Bisa Dicari:
+                  </h4>
                   <ul className="text-sm text-purple-700 space-y-2 text-left">
                     <li>• "Saya sering sakit kepala dan pusing"</li>
                     <li>• "Batuk saya sudah seminggu tidak sembuh"</li>
@@ -281,33 +309,44 @@ function VoiceSearchContent() {
 
           {/* Technology Info */}
           <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-blue-100">
-            <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">Teknologi AI Speech-to-Text</h3>
+            <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">
+              Teknologi AI Speech-to-Text
+            </h3>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Volume2 className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-gray-800 mb-2">Speech Recognition</h4>
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  Speech Recognition
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Mengkonversi suara menjadi teks dengan akurasi tinggi menggunakan Web Speech API
+                  Mengkonversi suara menjadi teks dengan akurasi tinggi
+                  menggunakan Web Speech API
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-gray-800 mb-2">AI Processing</h4>
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  AI Processing
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Menganalisis teks keluhan menggunakan AI Gemini untuk mencari tanaman obat yang tepat
+                  Menganalisis teks keluhan menggunakan AI Gemini untuk mencari
+                  tanaman obat yang tepat
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Leaf className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-semibold text-gray-800 mb-2">Smart Matching</h4>
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  Smart Matching
+                </h4>
                 <p className="text-sm text-gray-600">
-                  Mencocokkan gejala dengan database tanaman obat tradisional Indonesia
+                  Mencocokkan gejala dengan database tanaman obat tradisional
+                  Indonesia
                 </p>
               </div>
             </div>
@@ -315,7 +354,7 @@ function VoiceSearchContent() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 export default function VoiceSearchPage() {
@@ -323,5 +362,5 @@ export default function VoiceSearchPage() {
     <Suspense fallback={<div>Loading...</div>}>
       <VoiceSearchContent />
     </Suspense>
-  )
+  );
 }
